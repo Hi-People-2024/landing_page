@@ -1,8 +1,10 @@
 import { useWordle } from "@/hooks/useWordle";
 import React, { useEffect } from "react";
+import { WordleGrid } from "./wordle-grid";
 
 export const WordleGameManager = ({ solution }: { solution: string }) => {
-  const { handleKeyup, currentGuess } = useWordle(solution);
+  const { handleKeyup, currentGuess, guesses, isCorrect, turn } =
+    useWordle(solution);
 
   useEffect(() => {
     window.addEventListener("keyup", handleKeyup);
@@ -11,7 +13,9 @@ export const WordleGameManager = ({ solution }: { solution: string }) => {
   }, [handleKeyup]);
   return (
     <div>
-      <p>{currentGuess}</p>
+      <p>{isCorrect && "You Win!"}</p>
+      <p>solution - {solution}</p>
+      <WordleGrid currentGuess={currentGuess} guesses={guesses} turn={turn} />
     </div>
   );
 };
