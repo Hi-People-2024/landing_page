@@ -67,3 +67,7 @@
     @apply bg-background text-foreground;
   }
 }
+
+.wordle_box {
+  @apply m-1 block h-[60px] w-[60px] border border-neutral-300 text-center text-4xl font-bold uppercase leading-[60px];
+}
