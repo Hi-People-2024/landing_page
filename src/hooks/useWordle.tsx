@@ -13,6 +13,9 @@ export const useWordle = (solution: string) => {
   );
   const [history, setHistory] = useState<string[]>([]);
   const [isCorrect, setIsCorrect] = useState<boolean>(false);
+  const [usedKeys, setUsedKeys] = useState<
+    Record<string, "green" | "yellow" | "grey">
+  >({});
 
   const formatGuess = () => {
     const solutionArray: (string | null)[] = [...solution];
@@ -57,11 +60,39 @@ export const useWordle = (solution: string) => {
       return prevTurn + 1;
     });
 
+    setUsedKeys((prevUsedKeys) => {
+      let newKeys = { ...prevUsedKeys };
+
+      formattedGuess.forEach((l) => {
+        const currentColor = newKeys[l.key];
+
+        if (l.color === "green") {
+          newKeys[l.key] = "green";
+          return;
+        }
+
+        if (l.color === "yellow" && currentColor !== "green") {
+          newKeys[l.key] = "yellow";
+          return;
+        }
+
+        if (
+          l.color === "grey" &&
+          currentColor !== "green" &&
+          currentColor !== "yellow"
+        ) {
+          newKeys[l.key] = "grey";
+          return;
+        }
+      });
+      return newKeys;
+    });
+
     setCurrentGuess("");
   };
 
-  const handleKeyup = (e: KeyboardEvent) => {
-    if (e.key === "Enter") {
+  const handleKeyup = (key: string) => {
+    if (key === "Enter") {
       if (turn > 5) {
         console.log("you used all your guesses");
         return;
@@ -81,15 +112,15 @@ export const useWordle = (solution: string) => {
       addNewGuess(formatted);
     }
 
-    if (e.key === "Backspace")
+    if (key === "Backspace")
       return setCurrentGuess((prev) => prev.slice(0, -1));
 
-    if (/^[a-zA-Z]$/.test(e.key)) {
+    if (/^[a-zA-Z]$/.test(key)) {
       if (currentGuess.length < 5) {
-        setCurrentGuess((prev) => prev + e.key);
+        setCurrentGuess((prev) => prev + key);
       }
     }
   };
 
-  return { turn, currentGuess, guesses, isCorrect, handleKeyup };
+  return { turn, currentGuess, guesses, isCorrect, handleKeyup, usedKeys };
 };
